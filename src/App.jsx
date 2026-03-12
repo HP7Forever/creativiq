@@ -2,7 +2,7 @@ import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Papa from "papaparse";
 
-const genAI = new GoogleGenerativeAI("AIzaSyDPm2FDRMH1--4caOHOHQf5gezOEl2WoI4");
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 export default function App() {
   const [csvData, setCsvData] = useState(null);
