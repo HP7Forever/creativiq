@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Papa from "papaparse";
+import ReactMarkdown from "react-markdown";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
@@ -28,14 +29,24 @@ export default function App() {
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
       const prompt = `
         You are a creative performance analyst AI similar to Motion's intelligence platform.
-        Analyze this ad creative data and provide:
-        1. TOP WINNERS - Which creatives are performing best and why
-        2. FATIGUE ALERTS - Which creatives are declining and need to be replaced
-        3. KEY PATTERNS - What patterns make winning creatives different
-        4. RECOMMENDATIONS - Exactly what to do next to improve performance
-        5. INDIA MARKET INSIGHT - How these patterns might apply to Indian D2C brands
+        Analyze this ad creative data and provide a report with exactly these 5 sections using markdown:
 
-        Be specific, data-driven, and actionable. Format your response clearly with each section.
+        ## 🏆 Top Winners
+        Which creatives are performing best and exactly why — be specific with numbers.
+
+        ## ⚠️ Fatigue Alerts
+        Which creatives are declining or underperforming and need to be replaced.
+
+        ## 🔍 Key Patterns
+        What patterns make winning creatives different from losing ones.
+
+        ## 🚀 Recommendations
+        Exactly what to do next — specific, actionable, numbered list.
+
+        ## 🇮🇳 India Market Insight
+        How these patterns apply to Indian D2C brands like boAt, Mamaearth, Myntra spending on Meta and YouTube.
+
+        Be data-driven, specific, and actionable. Use bold for key metrics.
 
         Data: ${JSON.stringify(csvData.slice(0, 10))}
       `;
@@ -48,56 +59,96 @@ export default function App() {
     setLoading(false);
   };
 
+  const sections = insights
+    ? insights.split("##").filter(Boolean).map((s) => "##" + s)
+    : [];
+
+  const sectionColors = [
+    { border: "#6366f1", bg: "#1e1e35" },
+    { border: "#f59e0b", bg: "#1e1a10" },
+    { border: "#8b5cf6", bg: "#1a1525" },
+    { border: "#10b981", bg: "#0f1e18" },
+    { border: "#f97316", bg: "#1e150f" },
+  ];
+
   return (
     <div style={styles.container}>
+      {/* Header */}
       <div style={styles.header}>
+        <div style={styles.badge}>AI-Powered • Inspired by Motion</div>
         <h1 style={styles.title}>CreativeIQ</h1>
         <p style={styles.subtitle}>
-          AI-powered creative intelligence — inspired by Motion
+          Upload your ad creative data and get AI-powered intelligence on
+          what's winning, what's fatiguing, and what to do next.
         </p>
       </div>
 
+      {/* Upload Card */}
       <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Upload Ad Creative Data</h2>
+        <h2 style={styles.cardTitle}>📊 Upload Ad Creative Data</h2>
         <p style={styles.hint}>
-          Upload a CSV with columns like: creative_name, spend, impressions,
-          clicks, ctr, roas, format, platform
+          CSV with columns: creative_name, spend, impressions, clicks, ctr,
+          roas, format, platform
         </p>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          style={styles.fileInput}
-        />
-        {fileName && (
-          <p style={styles.fileName}>✅ Loaded: {fileName} — {csvData?.length} rows</p>
-        )}
+        <label style={styles.uploadLabel}>
+          <input
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
+          {fileName ? `✅ ${fileName} — ${csvData?.length} rows loaded` : "📁 Choose CSV File"}
+        </label>
         <button
           onClick={analyzeCreatives}
           disabled={!csvData || loading}
           style={!csvData || loading ? styles.buttonDisabled : styles.button}
         >
-          {loading ? "Analyzing..." : "Analyze Creatives ⚡"}
+          {loading ? "🤖 Analyzing your creatives..." : "⚡ Analyze Creatives"}
         </button>
       </div>
 
+      {/* Loading */}
       {loading && (
-        <div style={styles.card}>
-          <p style={styles.loading}>
-            🤖 AI agent is analyzing your creative data...
+        <div style={styles.loadingCard}>
+          <div style={styles.loadingDot} />
+          <p style={styles.loadingText}>
+            AI agent is processing your creative data...
           </p>
         </div>
       )}
 
-      {insights && (
-        <div style={styles.card}>
-          <h2 style={styles.cardTitle}>Creative Intelligence Report</h2>
-          <pre style={styles.insights}>{insights}</pre>
+      {/* Results */}
+      {insights && !loading && (
+        <div>
+          <h2 style={styles.reportTitle}>Creative Intelligence Report</h2>
+          {sections.length > 1
+            ? sections.map((section, i) => (
+                <div
+                  key={i}
+                  style={{
+                    ...styles.insightCard,
+                    borderLeft: `4px solid ${sectionColors[i % sectionColors.length].border}`,
+                    backgroundColor: sectionColors[i % sectionColors.length].bg,
+                  }}
+                >
+                  <ReactMarkdown>{section}</ReactMarkdown>
+                </div>
+              ))
+            : (
+                <div style={styles.insightCard}>
+                  <ReactMarkdown>{insights}</ReactMarkdown>
+                </div>
+              )}
         </div>
       )}
 
+      {/* Footer */}
       <div style={styles.footer}>
-        <p>Built by Rohit Thakur — inspired by Motion's creative intelligence platform</p>
+        <p>Built by <strong>Rohit Thakur</strong> — inspired by Motion's creative intelligence platform</p>
+        <p style={{ color: "#4b5563", fontSize: "12px", marginTop: "4px" }}>
+          India's D2C ad market needs this. Motion, let's talk.
+        </p>
       </div>
     </div>
   );
@@ -106,96 +157,140 @@ export default function App() {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundColor: "#0f0f13",
-    color: "#ffffff",
+    backgroundColor: "#0a0a0f",
+    color: "#e2e8f0",
     fontFamily: "'Inter', sans-serif",
     padding: "40px 20px",
-    maxWidth: "800px",
+    maxWidth: "860px",
     margin: "0 auto",
   },
   header: {
     textAlign: "center",
-    marginBottom: "40px",
+    marginBottom: "48px",
+  },
+  badge: {
+    display: "inline-block",
+    backgroundColor: "#1e1e35",
+    border: "1px solid #6366f1",
+    color: "#6366f1",
+    fontSize: "12px",
+    fontWeight: "600",
+    padding: "6px 16px",
+    borderRadius: "999px",
+    marginBottom: "16px",
+    letterSpacing: "0.05em",
   },
   title: {
-    fontSize: "48px",
-    fontWeight: "800",
-    background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+    fontSize: "56px",
+    fontWeight: "900",
+    background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
-    margin: "0 0 10px 0",
+    margin: "0 0 16px 0",
+    letterSpacing: "-2px",
   },
   subtitle: {
-    color: "#9ca3af",
+    color: "#6b7280",
     fontSize: "16px",
+    maxWidth: "560px",
+    margin: "0 auto",
+    lineHeight: "1.7",
   },
   card: {
-    backgroundColor: "#1a1a24",
-    borderRadius: "16px",
-    padding: "32px",
+    backgroundColor: "#13131a",
+    borderRadius: "20px",
+    padding: "36px",
     marginBottom: "24px",
     border: "1px solid #2d2d3d",
   },
   cardTitle: {
     fontSize: "20px",
     fontWeight: "700",
-    marginBottom: "12px",
-    color: "#e2e8f0",
+    marginBottom: "8px",
+    color: "#f1f5f9",
   },
   hint: {
+    color: "#4b5563",
+    fontSize: "13px",
+    marginBottom: "24px",
+  },
+  uploadLabel: {
+    display: "block",
+    border: "2px dashed #2d2d3d",
+    borderRadius: "12px",
+    padding: "20px",
+    textAlign: "center",
     color: "#6b7280",
     fontSize: "14px",
-    marginBottom: "20px",
-  },
-  fileInput: {
-    display: "block",
+    cursor: "pointer",
     marginBottom: "16px",
-    color: "#9ca3af",
-    fontSize: "14px",
-  },
-  fileName: {
-    color: "#6366f1",
-    fontSize: "14px",
-    marginBottom: "16px",
+    transition: "all 0.2s",
   },
   button: {
     backgroundColor: "#6366f1",
     color: "#ffffff",
     border: "none",
-    borderRadius: "10px",
-    padding: "14px 32px",
+    borderRadius: "12px",
+    padding: "16px 32px",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
     cursor: "pointer",
     width: "100%",
+    letterSpacing: "0.02em",
   },
   buttonDisabled: {
-    backgroundColor: "#2d2d3d",
-    color: "#6b7280",
+    backgroundColor: "#1e1e2e",
+    color: "#4b5563",
     border: "none",
-    borderRadius: "10px",
-    padding: "14px 32px",
+    borderRadius: "12px",
+    padding: "16px 32px",
     fontSize: "16px",
-    fontWeight: "600",
+    fontWeight: "700",
     cursor: "not-allowed",
     width: "100%",
   },
-  loading: {
-    textAlign: "center",
-    color: "#6366f1",
-    fontSize: "16px",
+  loadingCard: {
+    backgroundColor: "#13131a",
+    borderRadius: "20px",
+    padding: "32px",
+    marginBottom: "24px",
+    border: "1px solid #2d2d3d",
+    display: "flex",
+    alignItems: "center",
+    gap: "16px",
   },
-  insights: {
-    whiteSpace: "pre-wrap",
-    color: "#e2e8f0",
-    fontSize: "14px",
+  loadingDot: {
+    width: "12px",
+    height: "12px",
+    borderRadius: "50%",
+    backgroundColor: "#6366f1",
+    flexShrink: 0,
+  },
+  loadingText: {
+    color: "#6366f1",
+    fontSize: "15px",
+    margin: 0,
+  },
+  reportTitle: {
+    fontSize: "24px",
+    fontWeight: "800",
+    marginBottom: "20px",
+    color: "#f1f5f9",
+  },
+  insightCard: {
+    borderRadius: "16px",
+    padding: "28px 32px",
+    marginBottom: "16px",
+    border: "1px solid #2d2d3d",
     lineHeight: "1.8",
-    fontFamily: "'Inter', sans-serif",
+    fontSize: "14px",
   },
   footer: {
     textAlign: "center",
-    color: "#4b5563",
+    color: "#6b7280",
     fontSize: "13px",
-    marginTop: "40px",
+    marginTop: "60px",
+    paddingTop: "24px",
+    borderTop: "1px solid #1e1e2e",
   },
 };
