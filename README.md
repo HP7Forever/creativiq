@@ -23,7 +23,7 @@ So instead of just applying, I spent 3 days building a mini version of what Moti
 
 ## Live Demo
 
-🔗 **[Live](https://creativiq-84fc.vercel.app/)**
+🔗 **[Try CreativeIQ Live](https://creativiq-84fc.vercel.app/)**
 
 ---
 
@@ -77,7 +77,7 @@ Obsessed with one question: *how can AI eliminate cognitive friction from how pe
 
 - 📧 rohitthakurdev07@gmail.com
 - 💼 [LinkedIn](https://www.linkedin.com/in/rohit-thakur-069055217/)
-- 🐙 [GitHub](https://github.com/HP7Forever)
+- 🐙 [GitHub](https://github.com/HP7Forever/creativiq)
 
 ---
 
