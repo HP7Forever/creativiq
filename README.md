@@ -23,7 +23,7 @@ So instead of just applying, I spent 3 days building a mini version of what Moti
 
 ## Live Demo
 
-🔗 **[https://creativiq-84fc.vercel.app/](#)**
+🔗 **[Live](https://creativiq-84fc.vercel.app/)**
 
 ---
 
