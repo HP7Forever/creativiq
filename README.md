@@ -76,7 +76,7 @@ Motion solves this for Western brands today. The same problem exists here — ju
 Obsessed with one question: *how can AI eliminate cognitive friction from how people work?*
 
 - 📧 rohitthakurdev07@gmail.com
-- 💼 [LinkedIn](https://linkedin.com/in/yourprofile)
+- 💼 [LinkedIn]([https://linkedin.com/in/yourprofile](https://www.linkedin.com/in/rohit-thakur-069055217/))
 - 🐙 [GitHub](https://github.com/HP7Forever)
 
 ---
