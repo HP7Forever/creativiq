@@ -23,7 +23,7 @@ So instead of just applying, I spent 3 days building a mini version of what Moti
 
 ## Live Demo
 
-🔗 **[Try CreativeIQ Live](#)** ← (Vercel link coming here)
+🔗 **[https://creativiq-84fc.vercel.app/](#)**
 
 ---
 
